@@ -118,8 +118,9 @@ export class PhoneInput extends React.Component<PhoneInputProps, PhoneInputState
     this.setState({
       phone,
       country,
+    }, () => {
+      onChange && onChange(country.alpha2, national)
     })
-    onChange && onChange(alpha2, national)
   }
 
   handleClick: React.MouseEventHandler<HTMLElement> = (event) => {
