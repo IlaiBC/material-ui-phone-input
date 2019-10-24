@@ -19,7 +19,6 @@ import {CountryMenuItem} from "./countryMenuItem"
 
 const sortBy = require("lodash/sortBy")
 const identity = require("lodash/identity")
-
 const lookup = require("country-data").lookup
 
 function getCountries(): Country[] {
@@ -83,6 +82,8 @@ export interface PhoneInputProps {
   fieldTheme?: Theme
   listTheme?: Theme
   renderInput?: (input: React.ReactElement<InputProps>) => React.ReactNode
+  initPhone?: string
+  initCountry?: string
 }
 
 export interface PhoneInputState {
@@ -190,6 +191,19 @@ export class PhoneInput extends React.Component<PhoneInputProps, PhoneInputState
   componentDidUpdate(prevProps: PhoneInputProps, prevState: PhoneInputState) {
     if (prevState.countries != this.state.countries) {
       this.list && this.list.forceUpdateGrid()
+    }
+  }
+
+  async componentDidMount(): Promise<void> {
+    const {initPhone, initCountry} = this.props
+    if (initPhone != null && initCountry != null) {
+      const country = this.props.initCountry != null ?
+        await lookup.countries({alpha2: this.props.initCountry})[0] : unknownCountry
+      const phone = this.props.initPhone != null ? this.props.initPhone : ""
+      this.setState({
+        country,
+        phone
+      })
     }
   }
 
