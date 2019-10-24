@@ -82,8 +82,8 @@ export interface PhoneInputProps {
   fieldTheme?: Theme
   listTheme?: Theme
   renderInput?: (input: React.ReactElement<InputProps>) => React.ReactNode
-  initPhone?: string
-  initCountry?: string
+  phone?: string | null
+  country?: Country | null
 }
 
 export interface PhoneInputState {
@@ -106,21 +106,17 @@ export class PhoneInput extends React.Component<PhoneInputProps, PhoneInputState
     search: ""
   }
 
-  async componentDidMount(): Promise<void> {
-    const {initPhone, initCountry} = this.props
-    if (initPhone != null && initCountry != null) {
-      const currentCountry = this.state.country
-      const country = this.props.initCountry != null ?
-        await lookup.countries({alpha2: this.props.initCountry})[0] : unknownCountry
-      const phone = this.props.initPhone != null ? this.props.initPhone : ""
-      if (this.state.country === currentCountry) {
-        this.setState({
-          country,
-          phone
-        })
-      }
+  static getDerivedStateFromProps(props: PhoneInputProps):Partial<PhoneInputState> {
+    const newState: Partial<PhoneInputState> = {}
+    if(props.country != null) {
+      newState.country = props.country
     }
+    if(props.phone != null) {
+      newState.phone = props.phone
+    }
+    return newState
   }
+
 
   handleChange: React.ChangeEventHandler<HTMLInputElement> = (event) => {
     const {onChange} = this.props
@@ -210,18 +206,6 @@ export class PhoneInput extends React.Component<PhoneInputProps, PhoneInputState
     }
   }
 
-  async componentDidMount(): Promise<void> {
-    const {initPhone, initCountry} = this.props
-    if (initPhone != null && initCountry != null) {
-      const country = this.props.initCountry != null ?
-        await lookup.countries({alpha2: this.props.initCountry})[0] : unknownCountry
-      const phone = this.props.initPhone != null ? this.props.initPhone : ""
-      this.setState({
-        country,
-        phone
-      })
-    }
-  }
 
   render() {
     const {classes: classesProp, fieldTheme, listTheme, renderInput = identity} = this.props
