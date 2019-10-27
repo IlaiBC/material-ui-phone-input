@@ -76,7 +76,7 @@ export const styles = {
 
 export interface PhoneInputProps {
   onBlur?: () => any,
-  onChange?: (alpha2: string, phoneNumber: string) => any,
+  onChange?: (country: Country, phoneNumber: string) => any,
   classes?: Classes<typeof styles>
   width?: number
   fieldTheme?: Theme
@@ -106,17 +106,16 @@ export class PhoneInput extends React.Component<PhoneInputProps, PhoneInputState
     search: ""
   }
 
-  static getDerivedStateFromProps(props: PhoneInputProps):Partial<PhoneInputState> {
+  static getDerivedStateFromProps(props: PhoneInputProps, state: PhoneInputState): Partial<PhoneInputState> {
     const newState: Partial<PhoneInputState> = {}
-    if(props.country != null) {
+    if (props.country != null && props.country !== state.country) {
       newState.country = props.country
     }
-    if(props.phone != null) {
+    if (props.phone != null && props.phone !== state.phone) {
       newState.phone = props.phone
     }
     return newState
   }
-
 
   handleChange: React.ChangeEventHandler<HTMLInputElement> = (event) => {
     const {onChange} = this.props
@@ -132,7 +131,7 @@ export class PhoneInput extends React.Component<PhoneInputProps, PhoneInputState
       phone,
       country,
     }, () => {
-      onChange && onChange(country.alpha2, national)
+      onChange && onChange(country, national)
     })
   }
 
@@ -205,7 +204,6 @@ export class PhoneInput extends React.Component<PhoneInputProps, PhoneInputState
       this.list && this.list.forceUpdateGrid()
     }
   }
-
 
   render() {
     const {classes: classesProp, fieldTheme, listTheme, renderInput = identity} = this.props
