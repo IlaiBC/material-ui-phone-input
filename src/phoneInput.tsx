@@ -98,23 +98,20 @@ export interface PhoneInputState {
 export class PhoneInput extends React.Component<PhoneInputProps, PhoneInputState> {
   list: List | null = null
 
-  state = {
-    phone: "",
-    anchorEl: null as any,
-    country: unknownCountry,
-    countries: allCountries,
-    search: ""
-  }
+  constructor(props: PhoneInputProps, ...args: any[]) {
+    super(props, ...args)
 
-  static getDerivedStateFromProps(props: PhoneInputProps, state: PhoneInputState): Partial<PhoneInputState> {
-    const newState: Partial<PhoneInputState> = {}
-    if (props.country != null && props.country !== state.country) {
-      newState.country = props.country
+    const country = this.props.country || unknownCountry
+
+    const phone = `(${country.countryCallingCodes[0]}) ${this.props.phone || ""}`
+
+    this.state = {
+      phone,
+      anchorEl: null as any,
+      country,
+      countries: allCountries,
+      search: ""
     }
-    if (props.phone != null && props.phone !== state.phone) {
-      newState.phone = props.phone
-    }
-    return newState
   }
 
   handleChange: React.ChangeEventHandler<HTMLInputElement> = (event) => {
@@ -153,6 +150,7 @@ export class PhoneInput extends React.Component<PhoneInputProps, PhoneInputState
   }
 
   handleCountryClick = (country: Country) => {
+    const {onChange} = this.props
     const {country: selectedCountry, phone: selectedPhone} = this.state
     const currentCallingCode = `(${selectedCountry.countryCallingCodes[0]})`
     const newCallingCode = `(${country.countryCallingCodes[0]})`
@@ -166,6 +164,8 @@ export class PhoneInput extends React.Component<PhoneInputProps, PhoneInputState
       phone,
       country,
       countries: allCountries
+    }, () => {
+      onChange && onChange(country, phone)
     })
   }
 
